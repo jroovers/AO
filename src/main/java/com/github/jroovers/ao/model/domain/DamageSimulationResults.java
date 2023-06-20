@@ -7,14 +7,14 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
+@ToString
 public class DamageSimulationResults {
 
     private Integer duration;
     private Integer simulatedDamage;
 
-    private Integer minimumHit;
-    private Integer maximumHit;
-    private Integer criticalHit;
+    private Integer averageDamagePerHit;
+    private DamageRange damageRange;
 
     private Integer hits;
     private Integer criticalHits;

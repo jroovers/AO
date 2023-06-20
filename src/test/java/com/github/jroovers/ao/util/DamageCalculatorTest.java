@@ -98,4 +98,47 @@ class DamageCalculatorTest {
         multiplier = DamageCalculator.getDamageMultiplier(beamer, 3000);
         assertThat(multiplier).isEqualTo(BigDecimal.valueOf(3.917).setScale(3, RoundingMode.HALF_UP));
     }
+
+    @Test
+    void someOtherWeapons() {
+        Weapon maxMaFist = Weapon.builder()
+                .name("3000 AR MA fist")
+                .ql(500)
+                .minDamage(450)
+                .maxDamage(1300)
+                .critical(800)
+                .build();
+        var range1 = DamageCalculator.damageRange(maxMaFist, 3000, 0, 10000);
+        assertThat(range1.getMinimumDamage()).isEqualTo(2325);
+        assertThat(range1.getMaximumDamage()).isEqualTo(5717);
+        assertThat(range1.getCriticalDamage()).isEqualTo(9850);
+
+        Weapon obsidianDescrator = Weapon.builder()
+                .name("Obsidian Desecrator")
+                .ql(1)
+                .minDamage(425)
+                .maxDamage(575)
+                .critical(666)
+                .build();
+        var range2 = DamageCalculator.damageRange(obsidianDescrator, 3000, 0, 10000);
+        assertThat(range2.getMinimumDamage()).isEqualTo(2195);
+        assertThat(range2.getMaximumDamage()).isEqualTo(2195);
+        assertThat(range2.getCriticalDamage()).isEqualTo(5637);
+
+    }
+
+    @Test
+    void simulate() {
+        Weapon obsidianDescrator = Weapon.builder()
+                .name("Obsidian Desecrator")
+                .ql(1)
+                .minDamage(425)
+                .maxDamage(575)
+                .critical(666)
+                .build();
+
+        var results = DamageCalculator.simulate(obsidianDescrator, 3000, 0, 34);
+        System.out.println(results);
+    }
+
 }

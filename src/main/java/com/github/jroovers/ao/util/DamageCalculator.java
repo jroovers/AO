@@ -1,10 +1,8 @@
 package com.github.jroovers.ao.util;
 
+import com.github.jroovers.ao.model.domain.DamageRange;
 import com.github.jroovers.ao.model.domain.DamageSimulationResults;
 import com.github.jroovers.ao.model.entities.Weapon;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -20,9 +18,17 @@ public class DamageCalculator {
     private static final BigDecimal highDivider = BigDecimal.valueOf(1200);
 
 
-    public static DamageSimulationResults simulate(Weapon weapon, int skill) {
-        DamageSimulationResults results = new DamageSimulationResults();
-        return null;
+    public static DamageSimulationResults simulate(Weapon weapon, int attackRating, int inits, int critChance) {
+        DamageRange range = damageRange(weapon, attackRating, 0, 0);
+        int avgDamage = range.getAverageDamage(critChance);
+        return DamageSimulationResults.builder()
+                .duration(60)
+                .hits(30)
+                .criticalHits((30 * critChance) / 100)
+                .averageDamagePerHit(avgDamage)
+                .simulatedDamage(avgDamage * 30)
+                .damageRange(range)
+                .build();
     }
 
     public static BigDecimal getDamageMultiplier(Weapon weapon, int attackRating) {
@@ -50,7 +56,7 @@ public class DamageCalculator {
         return new DamageRange(minDamage, Math.max(minDamage, maxDamage), Math.max(critMinDamage, critMaxDamage));
     }
 
-    private int getWeaponDamage(Weapon weapon, Function<Weapon, Integer> damageGetter, int attackRating, int addDamage, int armorClass) {
+    private static int getWeaponDamage(Weapon weapon, Function<Weapon, Integer> damageGetter, int attackRating, int addDamage, int armorClass) {
         BigDecimal multiplier = getDamageMultiplier(weapon, attackRating);
         Integer weaponDamageStat = damageGetter.apply(weapon);
         int dmg = (int) (weaponDamageStat * multiplier.doubleValue());
@@ -58,16 +64,7 @@ public class DamageCalculator {
             dmg = dmg - (armorClass / 10);
             if (dmg < 0) dmg = 1;
         }
-        return dmg + addDamage;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    @EqualsAndHashCode
-    public class DamageRange {
-        private int minimumDamage;
-        private int maximumDamage;
-        private int criticalDamage;
+        return Math.min(dmg + addDamage, 13_000);
     }
 
 }
