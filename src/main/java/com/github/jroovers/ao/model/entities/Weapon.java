@@ -35,6 +35,8 @@ public class Weapon {
     private Double rechargeSpeed;
     private Double equipSpeed;
 
+    private Integer maxBeneficialSkill;
+
     public Double getReloadSpeed() {
         return this.rechargeSpeed;
     }
